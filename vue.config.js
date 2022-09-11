@@ -27,9 +27,9 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  // lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: process.env.NODE_ENV === 'development',
   // 关闭eslint,需要重启项目才能生效
-  lintOnSave: false,
+  // lintOnSave: false,
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -38,7 +38,19 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    // 配置代理
+    proxy: {
+      '/acl': {
+        target: 'http://39.98.123.211:8170',
+        // 路由重定向
+        pathRewrite: { '^/acl': '' }
+      },
+      '/product': {
+        target: 'http://39.98.123.211:8510',
+        // 路由重定向
+        pathRewrite: { '^/product': '' }
+      }
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

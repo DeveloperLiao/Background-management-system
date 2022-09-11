@@ -116,6 +116,7 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 表单验证
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
