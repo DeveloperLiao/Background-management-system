@@ -5,7 +5,7 @@
       type="primary"
       class="el-icon-plus btn"
       style="margin:10px 0"
-      @click="dialogVisible=!dialogVisible"
+      @click="addBtn"
     >
       添加
     </el-button>
@@ -30,8 +30,7 @@
         label="品牌名称"
       >
         <template slot-scope="{$index,row}">
-          <span :key="row.id">{{ row.tmName
-          }}</span>
+          <span :key="row.id">{{ row.tmName }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -55,19 +54,22 @@
         prop="prop"
         label="操作"
       >
-        <el-button
-          type="warning"
-          class="el-icon-edit"
-          @click="updateTradeMarkList"
-        >
-          修改
-        </el-button>
-        <el-button
-          type="danger"
-          class="el-icon-delete"
-        >
-          删除
-        </el-button>
+        <template slot-scope="{$index,row}">
+          <el-button
+            type="warning"
+            class="el-icon-edit"
+            @click="getTradeMark(row.id)"
+          >
+            修改
+          </el-button>
+          <el-button
+            type="danger"
+            class="el-icon-delete"
+            @click="delTradeMark(row.id)"
+          >
+            删除
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页器 -->
@@ -87,15 +89,16 @@
     </div>
     <!-- 添加|修改品牌对话框 -->
     <el-dialog
-      title="添加品牌"
+      :title="tmForm.id?'修改品牌':'添加品牌'"
       :visible.sync="dialogVisible"
       width="500px"
+      :before-close="dlbfClose"
     >
       <!-- 收集信息的表单 -->
       <el-form
         ref="tmForm"
         label-width="100px"
-        :model="tmFrom"
+        :model="tmForm"
         :rules="rules"
       >
         <el-form-item
@@ -103,7 +106,7 @@
           prop="tmName"
         >
           <el-input
-            v-model="tmFrom.tmName"
+            v-model="tmForm.tmName"
             type="text"
             autocomplete="off"
             style="width:80%"
@@ -121,8 +124,8 @@
             :before-upload="beforeAvatarUpload"
           >
             <img
-              v-if="tmFrom.logoUrl"
-              :src="tmFrom.logoUrl"
+              v-if="tmForm.logoUrl"
+              :src="tmForm.logoUrl"
               class="avatar"
             >
             <i
@@ -164,6 +167,7 @@ export default {
         }
       }, 1000)
     }
+    // 检验品牌LOGO
     var checklogoUrl = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('品牌LOGO不能为空！'))
@@ -185,10 +189,11 @@ export default {
       // 上传图片的url
       imageUrl: '',
       // 表单收集的数据
-      tmFrom: {
+      tmForm: {
         logoUrl: '',
         tmName: ''
       },
+      //验证规则
       rules: {
         tmName: [{ required: true, validator: checktmName, trigger: 'blur' }],
         logoUrl: [{ required: true, validator: checklogoUrl }]
@@ -211,7 +216,7 @@ export default {
         alert('失败！')
       }
     },
-    // 添加品牌列表
+    // 添加|更新品牌列表
     async addTradeMarkList() {
       let tmForm = this.$refs.tmForm
       tmForm.validate(async valid => {
@@ -220,16 +225,34 @@ export default {
           // 关闭对话框
           this.dialogVisible = false
           // 提交数据
-          let result = await this.$api.trademark.addTradeMarkList(this.tmFrom)
-          if (result.code == 200) {
-            this.$message({
-              message: '添加成功！',
-              type: 'success'
-            })
-            // 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
-            tmForm.resetFields()
+          if (this.tmForm.id) {
+            // 更新对应id品牌的数据
+            let result = await this.$api.trademark.updateTradeMark(this.tmForm)
+            if (result.code == 200) {
+              this.$message({
+                type: 'success',
+                message: '修改成功！'
+              })
+              // 重新发请求
+              this.getTradeMarkList()
+              // 删除对象的属性
+              delete this.tmForm.id
+              // 重置表单
+              tmForm.resetFields()
+            }
           } else {
-            this.$message.error('添加失败！')
+            let result = await this.$api.trademark.addTradeMarkList(this.tmForm)
+            if (result.code == 200) {
+              this.$message({
+                message: '添加成功！',
+                type: 'success'
+              })
+              this.getTradeMarkList()
+              // 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
+              tmForm.resetFields()
+            } else {
+              this.$message.error('添加失败！')
+            }
           }
         } else {
           this.$message.error('添加失败！')
@@ -240,7 +263,7 @@ export default {
     // 上传成功之后
     handleAvatarSuccess(res) {
       if (res.code == 200) {
-        this.tmFrom.logoUrl = res.data
+        this.tmForm.logoUrl = res.data
       } else {
         this.$message.error('上传失败')
       }
@@ -264,7 +287,42 @@ export default {
       // 关闭对话框
       this.dialogVisible = false
     },
-    updateTradeMarkList() {}
+    // 获取某个id的品牌信息
+    async getTradeMark(id) {
+      // 拿到对应id的品牌数据
+      let result = await this.$api.trademark.getTradeMark(id)
+      if (result.code) {
+        let { tmName, logoUrl } = result.data
+        // 在对话框中显示出来
+        this.dialogVisible = true
+        this.tmForm = { id, tmName, logoUrl }
+      }
+    },
+    // 删除某个id的品牌信息
+    async delTradeMark(id) {
+      let result = await this.$api.trademark.delTradeMark(id)
+      if (result.code == 200) {
+        this.$message({
+          type: 'success',
+          message: '删除成功！'
+        })
+        this.getTradeMarkList()
+      } else {
+        this.$message.error('删除失败！')
+      }
+    },
+    // 添加按钮
+    addBtn() {
+      this.dialogVisible = !this.dialogVisible
+    },
+    // 添加品牌对话框关闭之前
+    dlbfClose(done) {
+      // 重置表单
+      this.tmForm.tmName = ''
+      this.tmForm.logoUrl = ''
+      // 	关闭前的回调，会暂停 Dialog 的关闭
+      done()
+    }
   }
 }
 </script>

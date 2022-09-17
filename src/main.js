@@ -11,7 +11,7 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
-
+import TypeBar from '@/components/TypeBar/index.vue' //引入全局组件TypeBar
 import '@/icons' // icon
 import '@/permission' // permission control
 //引入product模块的所有api
@@ -25,7 +25,8 @@ Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 // 将product的所有api挂载到Vue的原型对象上
 Vue.prototype.$api = api
-
+// 使用全局组件
+Vue.component('TypeBar', TypeBar)
 new Vue({
   el: '#app',
   router,
