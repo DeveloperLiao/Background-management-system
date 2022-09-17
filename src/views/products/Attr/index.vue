@@ -135,12 +135,18 @@
               align="center"
               label="操作"
             >
-              <template slot-scope="{$index}">
-                <el-button
-                  type="danger"
-                  class="el-icon-delete"
-                  @click="delAttr($index)"
-                />
+              <template slot-scope="{row,$index}">
+                <el-popconfirm
+                  ref="popconfirm"
+                  :title="`确定删除${row.valueName}吗？`"
+                  @onConfirm="delAttr($index)"
+                >
+                  <el-button
+                    slot="reference"
+                    type="danger"
+                    class="el-icon-delete"
+                  />
+                </el-popconfirm>
               </template>
             </el-table-column>
           </el-table>

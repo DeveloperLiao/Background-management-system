@@ -18,6 +18,8 @@ import '@/permission' // permission control
 import api from '@/api/products'
 // 使用mock的数据
 import '../mock/mock-server.js'
+//
+import HintButton from '@/components/HintButton/index.vue'
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
@@ -27,6 +29,7 @@ Vue.config.productionTip = false
 Vue.prototype.$api = api
 // 使用全局组件
 Vue.component('TypeBar', TypeBar)
+Vue.component('HintButton', HintButton)
 new Vue({
   el: '#app',
   router,
