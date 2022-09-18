@@ -8,7 +8,7 @@
       <el-button
         type="primary"
         class="el-icon-plus"
-        :disabled="addBtnShow"
+        :disabled="spuList.length==0"
         @click="addOrEditSpu"
       >
         添加SPU
@@ -58,7 +58,7 @@
               type="warning"
               class="el-icon-edit"
               title="修改spu"
-              @click="addOrEditSpu"
+              @click="addOrEditSpu(row)"
             />
             <HintButton
               type="info"
@@ -87,7 +87,11 @@
       </div>
     </el-card>
     <sku-form v-show="scence==2" />
-    <spu-form v-show="scence==3" />
+    <spu-form
+      v-show="scence==3"
+      ref="spuForm"
+      @cancelBtn="changeSence"
+    />
   </div>
 </template>
 
@@ -116,15 +120,13 @@ export default {
       // 控制多个场景的切换
       // 1显示sku列表 2添加sku  3添加或者修改spu
       scence: 1,
-      // 添加spu按钮的禁用状态
-      addBtnShow: true
+    
     }
   },
   methods: {
     // 获取三级商品的Id
     async getCategoryId(categoryId) {
       this.category3Id = categoryId.category3Id
-      this.addBtnShow = false
       this.getSpuList()
     },
     // 获取Spu列表
@@ -149,10 +151,16 @@ export default {
       this.scence = 2
       this.show = false
     },
-    // 添加Spu
-    addOrEditSpu() {
+    // 添加或者编辑Spu
+    addOrEditSpu(row) {
       this.scence = 3
       this.show = false
+      // 初始化spuForm
+      this.$refs.spuForm.initSpuForm(row.id)
+    },
+    // 切换场景
+    changeSence(val) {
+      this.scence = val
     }
   }
 }
