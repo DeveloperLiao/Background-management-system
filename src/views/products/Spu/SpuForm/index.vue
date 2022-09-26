@@ -141,7 +141,7 @@
       <el-form-item>
         <el-button
           type="primary"
-          @click="updateInfo"
+          @click="updateOrsaveInfo"
         >
           保存
         </el-button>
@@ -272,7 +272,9 @@ export default {
       if (saleAttrValueName !== '' && !res) {
         row.spuSaleAttrValueList.push({
           saleAttrName: row.saleAttrName,
-          saleAttrValueName: this.saleAttrValueName     
+          saleAttrValueName: this.saleAttrValueName,
+          isChecked: null,
+          baseSaleAttrId: index + 1
         })
       } else {
         this.$message.error('输入为空或者重复！')
@@ -285,14 +287,16 @@ export default {
     cancelBtn() {
       this.$emit('cancelBtn', { showNum: 1 })
       // 置空
-      this.tmName = ''
-      this.tmAttr = ''
-      this.spuInfo.spuName = ''
-      delete this.spuInfo.id
-      delete this.spuInfo.tmId
-      this.spuInfo.description = ''
-      this.spuImageList = []
-      this.spuSaleAttrList = []
+      // this.tmName = ''
+      // this.tmAttr = ''
+      // this.spuInfo.spuName = ''
+      // delete this.spuInfo.id
+      // delete this.spuInfo.tmId
+      // this.spuInfo.description = ''
+      // this.spuImageList = []
+      // this.spuSaleAttrList = []
+      // 合并对象，原始的data值(this.$options.data()，只读)赋值给响应式的data值，重置
+      Object.assign(this._data, this.$options.data())
     },
     // 添加销售属性
     addTradeAttr() {
@@ -300,7 +304,7 @@ export default {
         // id: 0,
         saleAttrName: this.tmAttr,
         btnShow: true,
-        // baseSaleAttrId: this.spuSaleAttrList.length + 1,
+        baseSaleAttrId: this.spuSaleAttrList.length + 1,
         // spuId: this.spuInfo.id,
         spuSaleAttrValueList: []
       })
@@ -309,8 +313,8 @@ export default {
     delSaleAttr(row, index) {
       row.spuSaleAttrValueList.splice(index, 1)
     },
-    //更改spuInfo信息
-    async updateInfo() {
+    //更改spuInfo或者添加spuInfo信息
+    async updateOrsaveInfo() {
       // 遍历数组中的每一个元素，返回函数处理后的结果，不改变原数组
       this.spuInfo.spuImageList = this.spuImageList.map(item => {
         return { imageName: item.name, imageUrl: (item.response && item.response.data) || item.url }
@@ -320,7 +324,7 @@ export default {
         delete item.btnShow
       })
       this.spuInfo.spuSaleAttrList = cloneDeep(this.spuSaleAttrList)
-      // 拿到category3Id
+      // 拿到category3Id赋值给spuInfo
       this.spuInfo.category3Id = this.category3id
       let res = await this.$api.spu.updateOrsaveSpuInfo(this.spuInfo)
       if (res.code == 200) {
@@ -328,9 +332,13 @@ export default {
         if (this.spuInfo.id) {
           this.$message({ type: 'success', message: '修改成功！' })
           this.$emit('cancelBtn', { showNum: 1 })
+          // 置空
+          Object.assign(this._data, this.$options.data())
         } else {
           this.$message({ type: 'success', message: '添加成功！' })
           this.$emit('cancelBtn', { showNum: 1, page: 1 })
+          // 置空
+          Object.assign(this._data, this.$options.data())
         }
       }
     }

@@ -58,7 +58,7 @@
               type="warning"
               class="el-icon-edit"
               title="修改spu"
-              @click="addOrEditSpu(delSpu)"
+              @click="addOrEditSpu(row)"
             />
             <HintButton
               type="info"
@@ -168,7 +168,7 @@ export default {
       // showNum控制多个场景的切换，page表示当前页
       this.scence = obj.showNum
       this.show = true
-      // 如果有obj.page,则是添加Spu，需要跳转到第一页
+      // 如果有obj.page,则是添加Spu，需要跳转到第一页，反之是修改Spu
       if (obj.page) {
         this.page = obj.page
       }
