@@ -9,7 +9,7 @@
         type="primary"
         class="el-icon-plus"
         :disabled="spuList.length==0"
-        @click="addOrEditSpu"
+        @click="addOrEditSpu(row='')"
       >
         添加SPU
       </el-button>
@@ -58,7 +58,7 @@
               type="warning"
               class="el-icon-edit"
               title="修改spu"
-              @click="addOrEditSpu(row)"
+              @click="addOrEditSpu(delSpu)"
             />
             <HintButton
               type="info"
@@ -69,6 +69,7 @@
               type="danger"
               class="el-icon-delete"
               title="删除spu"
+              @click="delSpu(row)"
             />
           </template>
         </el-table-column>
@@ -90,6 +91,7 @@
     <spu-form
       v-show="scence==3"
       ref="spuForm"
+      :category3id="category3Id"
       @cancelBtn="changeSence"
     />
   </div>
@@ -119,8 +121,7 @@ export default {
       total: 0,
       // 控制多个场景的切换
       // 1显示sku列表 2添加sku  3添加或者修改spu
-      scence: 1,
-    
+      scence: 1
     }
   },
   methods: {
@@ -155,12 +156,34 @@ export default {
     addOrEditSpu(row) {
       this.scence = 3
       this.show = false
+      if (row == '') {
+        this.$refs.spuForm.initSpuForm()
+      } else {
+        this.$refs.spuForm.initSpuForm(row.id)
+      }
       // 初始化spuForm
-      this.$refs.spuForm.initSpuForm(row.id)
     },
     // 切换场景
-    changeSence(val) {
-      this.scence = val
+    changeSence(obj) {
+      // showNum控制多个场景的切换，page表示当前页
+      this.scence = obj.showNum
+      this.show = true
+      // 如果有obj.page,则是添加Spu，需要跳转到第一页
+      if (obj.page) {
+        this.page = obj.page
+      }
+      // 重新刷新页面
+      this.getSpuList(this.page)
+    },
+    // 删除Spu
+    async delSpu(row) {
+      let res = await this.$api.spu.delSpu(row.id)
+      if (res.code == 200) {
+        this.$message({ type: 'success', message: '删除成功！' })
+        this.getSpuList(this.page)
+      } else {
+        this.$message.error('删除失败！')
+      }
     }
   }
 }

@@ -9,3 +9,13 @@ export const getTrademarkList = () => request({ url: '/product/baseTrademark/get
 export const getSpuImageList = spuId => request({ url: `/product/spuImageList/${spuId}`, method: 'get' })
 // 获取平台全部的销售属性
 export const getBaseSaleAttrList = () => request({ url: '/product/baseSaleAttrList', method: 'get' })
+//更改或者添加spu信息
+export const updateOrsaveSpuInfo = spuInfo => {
+  if (spuInfo.id) {
+    return request({ url: '/product/updateSpuInfo', method: 'post', data: spuInfo })
+  } else {
+    return request({ url: '/product/saveSpuInfo', method: 'post', data: spuInfo })
+  }
+}
+// 删除SPU
+export const delSpu = spuId => request({ url: `/product/deleteSpu/${spuId}`, method: 'delete' })
