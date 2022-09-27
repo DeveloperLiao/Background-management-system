@@ -52,7 +52,7 @@
               type="success"
               class="el-icon-plus"
               title="添加sku"
-              @click="addSku"
+              @click="addSku(row)"
             />
             <HintButton
               type="warning"
@@ -87,7 +87,10 @@
         />
       </div>
     </el-card>
-    <sku-form v-show="scence==2" />
+    <sku-form
+      v-show="scence==2"
+      ref="skuForm"
+    />
     <spu-form
       v-show="scence==3"
       ref="spuForm"
@@ -115,6 +118,10 @@ export default {
       page: 1,
       // 每页显示几条数据
       limit: 3,
+      // 一级商品的id
+      category1Id: '',
+      // 二级商品的id
+      category2Id: '',
       // 三级商品的id
       category3Id: '',
       //总页数
@@ -125,8 +132,10 @@ export default {
     }
   },
   methods: {
-    // 获取三级商品的Id
+    // 获取一、二、三级商品的Id
     async getCategoryId(categoryId) {
+      this.category1Id = categoryId.category1Id
+      this.category2Id = categoryId.category2Id
       this.category3Id = categoryId.category3Id
       this.getSpuList()
     },
@@ -148,9 +157,12 @@ export default {
       this.getSpuList()
     },
     // 添加sku
-    addSku() {
+    addSku(row) {
       this.scence = 2
       this.show = false
+      this.$refs.skuForm.getSpuImageList(row.id)
+      this.$refs.skuForm.getSpuSaleAttrList(row.id)
+      this.$refs.skuForm.getattrInfoList(this.category1Id, this.category2Id, row)
     },
     // 添加或者编辑Spu
     addOrEditSpu(row) {

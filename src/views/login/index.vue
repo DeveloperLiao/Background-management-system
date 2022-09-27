@@ -9,7 +9,9 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">登录</h3>
+        <h3 class="title">
+          登录
+        </h3>
       </div>
 
       <el-form-item prop="username">
@@ -54,7 +56,9 @@
         type="primary"
         style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-      >登录</el-button>
+      >
+        登录
+      </el-button>
       <div class="tips">
         <span style="margin-right: 20px">username: admin</span>
         <span> password: any</span>
@@ -189,13 +193,14 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 $bg: #2d3a4b;
-$dark_gray: #889aa4;
+$dark_gray: #304156;
 $light_gray: #eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
-  background: url('~@/assets/background_img/bg.jpg') no-repeat;
+  // background: url('~@/assets/background_img/bg.jpg') no-repeat;
+  background: #3f6088;
   background-size: 100% 100%;
   overflow: hidden;
 

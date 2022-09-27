@@ -286,15 +286,6 @@ export default {
     // 取消按钮
     cancelBtn() {
       this.$emit('cancelBtn', { showNum: 1 })
-      // 置空
-      // this.tmName = ''
-      // this.tmAttr = ''
-      // this.spuInfo.spuName = ''
-      // delete this.spuInfo.id
-      // delete this.spuInfo.tmId
-      // this.spuInfo.description = ''
-      // this.spuImageList = []
-      // this.spuSaleAttrList = []
       // 合并对象，原始的data值(this.$options.data()，只读)赋值给响应式的data值，重置
       Object.assign(this._data, this.$options.data())
     },
