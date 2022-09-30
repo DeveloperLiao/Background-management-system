@@ -285,7 +285,7 @@ export default {
     },
     // 取消按钮
     cancelBtn() {
-      this.$emit('cancelBtn', { showNum: 1 })
+      this.$emit('cancelBtn2', { showNum: 1 })
       // 合并对象，原始的data值(this.$options.data()，只读)赋值给响应式的data值，重置
       Object.assign(this._data, this.$options.data())
     },
@@ -322,12 +322,12 @@ export default {
         // 有id说明是编辑模式
         if (this.spuInfo.id) {
           this.$message({ type: 'success', message: '修改成功！' })
-          this.$emit('cancelBtn', { showNum: 1 })
+          this.$emit('cancelBtn2', { showNum: 1 })
           // 置空
           Object.assign(this._data, this.$options.data())
         } else {
           this.$message({ type: 'success', message: '添加成功！' })
-          this.$emit('cancelBtn', { showNum: 1, page: 1 })
+          this.$emit('cancelBtn2', { showNum: 1, page: 1 })
           // 置空
           Object.assign(this._data, this.$options.data())
         }

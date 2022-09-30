@@ -64,6 +64,7 @@
               type="info"
               class="el-icon-info"
               title="查看当前spu全部sku列表"
+              @click="watchAllSku(row)"
             />
             <HintButton
               type="danger"
@@ -90,17 +91,61 @@
     <sku-form
       v-show="scence==2"
       ref="skuForm"
+      @cancelBtn1="changeSencefrom2"
     />
     <spu-form
       v-show="scence==3"
       ref="spuForm"
       :category3id="category3Id"
-      @cancelBtn="changeSence"
+      @cancelBtn2="changeSencefrom3"
     />
+    <!-- 对话框，显示全部的sku列表 -->
+    <el-dialog
+      :title="spuName"
+      :visible.sync="dialogVisible"
+      width="width"
+      :before-close="dialogBeforeClose"
+      :show-close="false"
+    >
+      <el-table
+        v-loading="loading"
+        :data="skuList"
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="skuName"
+          label="名称"
+          width="width"
+        />
+        <el-table-column
+          prop="price"
+          label="价格 "
+          width="width"
+        />
+        <el-table-column
+          prop="weight"
+          label="重量"
+          width="width"
+        />
+        <el-table-column
+          label="默认图片"
+          width="width"
+        >
+          <template slot-scope="{row}">
+            <img
+              :src="row.skuDefaultImg "
+              alt="!"
+              width="100"
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { done } from 'nprogress'
 import SkuForm from './SkuForm/index.vue'
 import SpuForm from './SpuForm/index.vue'
 export default {
@@ -128,7 +173,15 @@ export default {
       total: 0,
       // 控制多个场景的切换
       // 1显示sku列表 2添加sku  3添加或者修改spu
-      scence: 1
+      scence: 1,
+      //对话框的显示与隐藏
+      dialogVisible: false,
+      // spu下的所有的sku
+      skuList: [],
+      // spu的名字
+      spuName: '',
+      // 页面加载效果
+      loading: true
     }
   },
   methods: {
@@ -175,8 +228,8 @@ export default {
       }
       // 初始化spuForm
     },
-    // 切换场景
-    changeSence(obj) {
+    // 从场景3切换场景1
+    changeSencefrom3(obj) {
       // showNum控制多个场景的切换，page表示当前页
       this.scence = obj.showNum
       this.show = true
@@ -185,6 +238,12 @@ export default {
         this.page = obj.page
       }
       // 重新刷新页面
+      this.getSpuList(this.page)
+    },
+    // 从场景2切换场景1
+    changeSencefrom2(obj) {
+      this.scence = obj.showNum
+      this.show = true
       this.getSpuList(this.page)
     },
     // 删除Spu
@@ -196,6 +255,24 @@ export default {
       } else {
         this.$message.error('删除失败！')
       }
+    },
+    //查看当前的spu的sku列表
+    async watchAllSku(row) {
+      this.dialogVisible = true
+      this.spuName = row.spuName
+      let res = await this.$api.spu.watchAllSku(row.id)
+      if (res.code == 200) {
+        let { data } = res
+        this.skuList = data
+        this.loading = false
+      }
+    },
+    // 关闭对话框前的事件
+    dialogBeforeClose(done) {
+      this.skuList = []
+      this.spuName = ''
+      this.loading = true
+      done()
     }
   }
 }
