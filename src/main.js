@@ -21,9 +21,9 @@ import '../mock/mock-server.js'
 //
 import HintButton from '@/components/HintButton/index.vue'
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+// Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
-// Vue.use(ElementUI)
+Vue.use(ElementUI)
 Vue.config.productionTip = false
 // 将product的所有api挂载到Vue的原型对象上
 Vue.prototype.$api = api
