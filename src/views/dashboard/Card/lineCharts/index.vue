@@ -36,7 +36,7 @@ export default {
         series: [
           {
             type: 'line',
-            data: [5, 55, 17, 55, 107, 20, 45.68, 45, 57, 48],
+            data: [5, 55, 17, 55, 107, 20, 45.68, 45, 57, 48, 8, 98, 47],
             // 点的样式
             itemStyle: {
               opacity: 0
